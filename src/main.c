@@ -1,40 +1,51 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct my_struct
+#define OBJS 8
+
+struct quote_object
 {
   int id;
-  void (* foo)();
+  int (* foo)();
 };
 
-void
-something ()
+int
+foo1 ()
 {
-  printf ( "something was called!\n" );
+  printf ( "foo1 was called!\n" );
+  return 0;
 }
 
-void
-other ()
+int
+foo2 ()
 {
-  printf ( "other was called!\n" );
+  printf ( "foo2 was called!\n" );
+  return 0;
 }
 
 int
 main ( int argc, char ** argv )
 {
-  struct my_struct * structs[2] = { 0 };
-  structs[0] = malloc( sizeof ( struct my_struct ) );
-  structs[0]->id = 1;
-  structs[0]->foo = something;
+  struct quote_object * quote_objects[OBJS] = { 0 };
+  int * foos[2] = { foo1, foo2 };
+  int i;
 
-  structs[1] = malloc( sizeof ( struct my_struct ) );
-  structs[1]->id = 2;
-  structs[1]->foo = other;
+  for ( i = 0 ; i < OBJS ; i++ )
+    {
+      quote_objects[i] = malloc( sizeof ( struct quote_object ) );
+      quote_objects[i]->id = i;
+      quote_objects[i]->foo = foos[ i % 2 ];
+    }
 
-  (structs[1]->foo)();
-  (structs[0]->foo)();
+  for ( i = 0 ; i < OBJS ; i++ )
+    {
+      (quote_objects[i]->foo)();
+      printf ( "by \"object\" no.%d\n\n", quote_objects[i]->id );
+    }
 
-  free ( structs[0] );
-  free ( structs[1] );
+  for ( i = 0 ; i < OBJS ; i++ )
+    {
+      free ( quote_objects[i] );
+    }
   return 0;
 }
